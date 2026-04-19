@@ -836,5 +836,5 @@ print(f'Test F1-score: {f1:.4f}')
 import joblib
 
 joblib.dump(clf.best_estimator_, 'decision_tree_model.pkl')
-
+joblib.dump(label_encoder, 'label_encoder.pkl')
 
