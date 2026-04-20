@@ -2,14 +2,16 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import joblib
 import os
-from predict import PredictPipeline
+from src.predict import PredictPipeline
 
 app = Flask(__name__)
 
+# get the path to the models folder
+model_path = "models/"
 
 # load the model
-
-model = joblib.load('model/decision_tree_model.pkl')
+with open(os.path.join(model_path, 'Decision Tree.pkl'), 'rb') as f:
+    model = joblib.load(f)
 
 # print(model)
 pred = PredictPipeline()
@@ -21,7 +23,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 def index():
     return "<h1>Hello World!</h1>"
 
-@app.route('/api/check_link', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 @cross_origin()
 def predict():
     
@@ -30,11 +32,11 @@ def predict():
     
     transform_url = pred.transformURL(url)
 
-    transform_url = transform_url
+    transform_url = transform_url.reshape(1, -1)
 
-    print("transform_url" , transform_url)
+    # print("transform_url" , transform_url)
 
-    prediction = pred.predict(transform_url)
+    prediction = model.predict(transform_url)
     
     # 'benign', 'defacement','phishing','malware'
     if(prediction == 0):
@@ -46,7 +48,6 @@ def predict():
     else:
         res = 'malware'
 
-    print("Prediction: ", prediction[0])
     response = jsonify({'prediction': res})
     
     return response

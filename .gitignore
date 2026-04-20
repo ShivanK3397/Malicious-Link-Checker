@@ -1,1 +1,5 @@
 model/malicious_phish.csv
+logs
+.venv
+__pycache__
+data
