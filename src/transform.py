@@ -1,10 +1,12 @@
 import re
+import site
 import sys
 from urllib.parse import urlparse
 from googlesearch import search
 from tld import get_tld
 import os.path
 from src.exception import customException 
+from googlesearch import search
 
 #Use of IP or not in domain
 class transformationFunctions():
@@ -27,6 +29,10 @@ class transformationFunctions():
         except Exception as e:
             raise customException(e,sys)
         
+    def google_index(self, url):
+        site = search(url, 5)
+        return 1 if site else 0
+        
 
     def count_dot(self, url):
         try:
@@ -35,6 +41,8 @@ class transformationFunctions():
 
         except Exception as e:
             raise customException(e,sys)
+        
+
         
 
     def count_www(self, url):

@@ -6,15 +6,20 @@ from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from logger import logging
-from exception import customException
+from src.logger import logging
+from src.exception import customException
 import os
 from sklearn.preprocessing import LabelEncoder
+import joblib
 
+from src.exception import customException
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_DIRS = BASE_DIR / "models"
 @dataclass
 class DataTransformationConfig:
-    preprocessor_obj_file_path = os.path.join("artifacts", "preprocessor.pkl")
+    preprocessor_obj_file_path = os.path.join(MODEL_DIRS, "preprocessor.pkl")
 
 
 
@@ -66,7 +71,7 @@ class DataTransformation:
             # print(train_df.columns)
             # print(test_df.columns)
             
-            X = ['use_of_ip','abnormal_url', 'count.', 'count-www', 'count@',
+            X = ['use_of_ip','abnormal_url','google_index', 'count.', 'count-www', 'count@',
                 'count_dir', 'count_embed_domain', 'short_url', 'count%', 'count?', 'count-', 'count=', 'url_length', 'count_https',
                 'count_http', 'hostname_length', 'sus_url', 'fd_length', 'tld_length', 'count_digits',
                 'count_letters']
@@ -91,6 +96,7 @@ class DataTransformation:
 
             test_arr = np.c_[input_feature_test_arr, np.array(test_df["type_code"])]
 
+            joblib.dump(preprocessing_obj, self.data_transformation_config.preprocessor_obj_file_path)
             logging.info(f"Saved preprocessing object.")
 
             return (

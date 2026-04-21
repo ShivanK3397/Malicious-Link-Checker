@@ -9,7 +9,7 @@ from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 
 from exception import customException
-from logger import logging
+import logging
 
 from utils import save_object,evaluate_models, get_result, get_best_model
 

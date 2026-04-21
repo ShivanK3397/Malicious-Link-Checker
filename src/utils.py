@@ -6,9 +6,16 @@ import joblib
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.metrics import accuracy_score, make_scorer
-from logger import logging
+from src.logger import logging
 import glob
-from exception import customException
+from src.exception import customException
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+MODEL_DIR = BASE_DIR / "model"
+MODEL_DIR.mkdir(parents=True, exist_ok=True)
+RESULTS_DIR = BASE_DIR / "results"
+RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 def save_object(file_path, obj):
     try:
@@ -38,7 +45,8 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
         for i in range(len(list(models))):
 
             k += 1
-            if(k <= 3):
+            #Training Decision Tree Classifier only temporarily 
+            if(k != 2):
                 continue
         
             else:
@@ -96,6 +104,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
                 test_f1 = f1_score(y_test, y_test_pred, average='weighted')
 
                 report_test[model_name] = {
+                    "Model Name": model_name,
                     "accuracy" : test_accuracy,
                     "precision" : test_precision,
                     "recall" : test_recall,
@@ -104,7 +113,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
 
                 logging.info(f"Training Report for model on Test Data{model_name} ===> {report_test[model_name]}")
                 
-                joblib.dump(model, open(f'./model/{model_name}.pkl', 'wb'))
+                joblib.dump(model, open(MODEL_DIR / f"{model_name}.pkl", "wb"))
                 logging.info(f"joblib file has been created for {model_name} in model folder")
 
 
@@ -125,12 +134,12 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param):
 
 def get_result(X_train, y_train, X_test, y_test):
     try:
-        model_path = "./model"
+        model_path = MODEL_DIR
         report_train = {}
         report_test = {}
 
         # Get all .pkl files in the folder
-        files = glob.glob(model_path + '/*.pkl')
+        files = glob.glob(str(model_path / '*.pkl'))
 
         # Print the list of files
         for file_path in files:
@@ -149,6 +158,7 @@ def get_result(X_train, y_train, X_test, y_test):
                 train_f1 = f1_score(y_train, y_train_pred, average='weighted')
 
                 report_train[model_name] = {
+                    "Model Name": model_name,
                     "accuracy" : train_accuracy,
                     "precision" : train_precision,
                     "recall" : train_recall,
@@ -167,6 +177,7 @@ def get_result(X_train, y_train, X_test, y_test):
                 test_f1 = f1_score(y_test, y_test_pred, average='weighted')
 
                 report_test[model_name] = {
+                    "Model Name": model_name,
                     "accuracy" : test_accuracy,
                     "precision" : test_precision,
                     "recall" : test_recall,
@@ -176,13 +187,13 @@ def get_result(X_train, y_train, X_test, y_test):
                 logging.info(f"Best Model finding-Training Report for model on Test Data{model_name} ===> {report_test[model_name]}")
 
         train_res = pd.DataFrame(report_train).T
+        train_res.columns=["Model Name", "accuracy", "precision", "recall", "f1 score"]
         
-        # train_res.columns=["Model Name", "accuracy", "precision", "recall", "f1 score"]
         test_res = pd.DataFrame(report_test).T
-        # test_res.columns=["Model Name", "accuracy", "precision", "recall", "f1 score"]
+        test_res.columns=["Model Name", "accuracy", "precision", "recall", "f1 score"]
 
-        train_res.to_csv("./results/Train_Result.csv")
-        test_res.to_csv("./results/Test_Result.csv")
+        train_res.to_csv(RESULTS_DIR / "Train_Result.csv")
+        test_res.to_csv(RESULTS_DIR / "Test_Result.csv")
 
         logging.info(f"Best Model finding- Training Report and Test report has been saved to CSV file in artifact folder")        
 
@@ -201,8 +212,8 @@ def load_object(file_path):
 
 def get_best_model():
     try:
-        train_result = pd.read_csv("./results/Train_Result.csv")
-        test_result = pd.read_csv("./results/Test_Result.csv")
+        train_result = pd.read_csv(RESULTS_DIR / "Train_Result.csv")
+        test_result = pd.read_csv(RESULTS_DIR / "Test_Result.csv")
 
 
         train_result = train_result.rename(columns={'Unnamed: 0': 'Model Name'})

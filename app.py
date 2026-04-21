@@ -7,7 +7,7 @@ from src.predict import PredictPipeline
 app = Flask(__name__)
 
 # get the path to the models folder
-model_path = "models/"
+model_path = "model/"
 
 # load the model
 with open(os.path.join(model_path, 'Decision Tree.pkl'), 'rb') as f:
@@ -19,11 +19,11 @@ pred = PredictPipeline()
 # Enable CORS with all origins
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route("/", methods=['GET'])
+@app.route("/", methods=['GET']) 
 def index():
     return "<h1>Hello World!</h1>"
 
-@app.route('/api/predict', methods=['POST'])
+@app.route('/api/check_link', methods=['POST'])
 @cross_origin()
 def predict():
     
@@ -34,10 +34,10 @@ def predict():
 
     transform_url = transform_url.reshape(1, -1)
 
-    # print("transform_url" , transform_url)
+    print("transform_url: " , transform_url)
 
     prediction = model.predict(transform_url)
-    
+    print("Prediction: " + str(prediction))
     # 'benign', 'defacement','phishing','malware'
     if(prediction == 0):
         res = 'benign'
