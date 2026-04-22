@@ -116,6 +116,9 @@
   .checker-footer {
     color: #000000;
   }
+  .checker-result {
+    color: #000000;
+  }
 }
 
 .checker-footer a {
