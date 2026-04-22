@@ -8,9 +8,6 @@ function App() {
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     setResult('')
     event.preventDefault()
-    const api = axios.create({
-      baseURL: import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL : 'http://localhost:5000',
-    })
     const urlInput = document.getElementById('url-input') as HTMLInputElement
     let url = urlInput.value
     if (!url) {
@@ -19,7 +16,7 @@ function App() {
     }
     console.log('Checking URL:', url)
     try {
-      const response = await api.post('/api/check_link', { url })
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/check_link`, { url })
       
       console.log(response.data)
       if(response.data.prediction === 'benign'){
