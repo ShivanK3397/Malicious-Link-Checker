@@ -29,7 +29,7 @@ function App() {
           url = 'www.' + url
         }
         try {
-          const response = await axios.post('/api/check_link', { url })
+           const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/check_link`, { url })
           setResult(response.data.prediction)
           
         } catch (error) {
