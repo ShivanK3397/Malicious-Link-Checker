@@ -1,15 +1,43 @@
 import './App.css'
 import axios from 'axios'
+import { useState } from 'react'
 
 function App() {
-
+  const [result, setResult] = useState<string>('')
+  
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setResult('')
     event.preventDefault()
     const urlInput = document.getElementById('url-input') as HTMLInputElement
-    const url = urlInput.value
+    let url = urlInput.value
+    if (!url) {
+     
+      return
+    }
+    console.log('Checking URL:', url)
     try {
-      const response = await axios.post('/check_link', { url })
+      const response = await axios.post('/api/check_link', { url })
+      
       console.log(response.data)
+      if(response.data.prediction === 'benign'){
+        setResult('benign')
+      }
+      if(response.data.prediction === 'malware'){
+        url = url.replace(/^https?:\/\//, '')
+        // Add www. if not already present
+        if (!url.startsWith('www.')) {
+          url = 'www.' + url
+        }
+        try {
+          const response = await axios.post('/api/check_link', { url })
+          setResult(response.data.prediction)
+          
+        } catch (error) {
+          console.error('Error checking link:', error)
+        }
+
+      }
+      
     } catch (error) {
       console.error('Error checking link:', error)
     }
@@ -27,14 +55,40 @@ function App() {
           <input
             id="url-input"
             className="checker-input"
-            type="url"
-            placeholder="https://example.com"
+            type="text"
+            placeholder="www.example.com"
           />
           <button className="checker-button" type="submit">
-            Enter
+            Submit
           </button>
+          
         </form>
+        <div>
+            {result && (
+              <p className="checker-result">
+                This link is:{' '}
+                <span
+                  className={
+                    result === 'benign'
+                      ? 'checker-result-status checker-result-status--benign'
+                      : 'checker-result-status checker-result-status--danger'
+                  }
+                >
+                  {result}
+                </span>
+              </p>
+            )}
+          </div>
       </div>
+      <footer className="checker-footer">
+        <p>
+          Made by 
+          <a
+            href="https://github.com/ShivanK3397"
+            target="_blank"
+            rel="noreferrer"> Shivan Kathir</a>
+        </p>
+      </footer>
     </main>
   )
 }

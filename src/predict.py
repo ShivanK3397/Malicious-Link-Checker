@@ -34,7 +34,7 @@ class PredictPipeline:
             countEqual = obj.count_equal(url)
             url_length = obj.url_length(url)
             count_https = obj.count_https(url)
-            count_http = obj.count_http(url)
+            count_http = 0
             hostname_length = obj.hostname_length(url)
             sus_url = obj.suspicious_words(url)
             fd_length = obj.first_directory_length(url)
