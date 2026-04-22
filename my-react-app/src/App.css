@@ -112,6 +112,12 @@
   
 }
 
+@media (prefers-color-scheme: light) {
+  .checker-footer {
+    color: #000000;
+  }
+}
+
 .checker-footer a {
   color: #60a5fa;
   text-decoration: none;
