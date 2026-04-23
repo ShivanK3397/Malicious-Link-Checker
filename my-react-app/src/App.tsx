@@ -22,20 +22,25 @@ function App() {
       if(response.data.prediction === 'benign'){
         setResult('benign')
       }
-      if(response.data.prediction === 'malware'){
+      else if(response.data.prediction === 'malware'){
         url = url.replace(/^https?:\/\//, '')
-        // Add www. if not already present
-        if (!url.startsWith('www.')) {
+        //Add www. if not already present
+        if (!/^www\./.test(url)) {
           url = 'www.' + url
         }
+        
         try {
            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/check_link`, { url })
           setResult(response.data.prediction)
+          console.log(response.data)
           
         } catch (error) {
           console.error('Error checking link:', error)
         }
 
+      }
+      else{
+        setResult(response.data.prediction)
       }
       
     } catch (error) {

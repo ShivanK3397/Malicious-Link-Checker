@@ -120,9 +120,10 @@ class transformationFunctions():
 
     def count_http(self, url):
         try:
-            return url.count('http')
+            import re
+            return len(re.findall(r'http(?!s)', url))
         except Exception as e:
-            raise customException(e,sys)
+            raise customException(e, sys)
         
 
     def count_percent(self, url):
