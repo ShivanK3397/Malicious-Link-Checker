@@ -85,6 +85,7 @@ function App() {
             )}
           </div>
       </div>
+      <p>Want to try it out? Find malicious links <a href="https://github.com/criminalip/Daily-Mal-Phishing" target="_blank" rel="noreferrer">here.</a> </p>
       <footer className="checker-footer">
         <p>
           Made by 
